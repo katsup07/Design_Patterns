@@ -1,3 +1,86 @@
+const highlightPatterns = [
+  { regex: /(\/\*[\s\S]*?\*\/|\/\/.*)/gm, type: 'comment' },
+  { regex: /(["'`])(?:\\.|(?!\1)[^\\])*\1/gm, type: 'string' },
+  { regex: /\b\d+(?:\.\d+)?\b/g, type: 'number' },
+  {
+    regex:
+      /\b(async|await|break|case|catch|class|const|continue|default|delete|do|else|enum|export|extends|finally|for|from|function|if|implements|import|in|instanceof|interface|let|new|of|private|protected|public|return|static|switch|throw|try|type|typeof|var|while|with|yield)\b/g,
+    type: 'keyword',
+  },
+  {
+    regex: /\b(string|number|boolean|void|any|unknown|never|Record|Partial|Pick|Omit|Map|Set|Promise|Array)\b/g,
+    type: 'type',
+  },
+  { regex: /\b(true|false|null|undefined|this|super)\b/g, type: 'literal' },
+  { regex: /@[a-zA-Z_][\w]*/g, type: 'decorator' },
+  { regex: /\b[A-Z][A-Za-z0-9_]*\b/g, type: 'class' },
+];
+
+function highlightTypeScript(code) {
+  const segments = [{ text: code, type: 'plain' }];
+
+  const applyPattern = (pattern) => {
+    for (let i = 0; i < segments.length; i += 1) {
+      const segment = segments[i];
+      if (segment.type !== 'plain') continue;
+
+      const matches = [];
+      let match;
+      pattern.regex.lastIndex = 0;
+      while ((match = pattern.regex.exec(segment.text))) {
+        matches.push({ start: match.index, end: match.index + match[0].length, text: match[0] });
+      }
+
+      if (!matches.length) continue;
+
+      const replacement = [];
+      let cursor = 0;
+
+      matches.forEach(({ start, end, text }) => {
+        if (start > cursor) {
+          replacement.push({ text: segment.text.slice(cursor, start), type: 'plain' });
+        }
+        replacement.push({ text, type: pattern.type });
+        cursor = end;
+      });
+
+      if (cursor < segment.text.length) {
+        replacement.push({ text: segment.text.slice(cursor), type: 'plain' });
+      }
+
+      segments.splice(i, 1, ...replacement);
+      i += replacement.length - 1;
+    }
+  };
+
+  highlightPatterns.forEach((pattern) => applyPattern(pattern));
+
+  const escapeHtml = (value) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  return segments
+    .map(({ text, type }) => {
+      const escaped = escapeHtml(text);
+      if (type === 'plain') {
+        return escaped;
+      }
+      return `<span class="token token-${type}">${escaped}</span>`;
+    })
+    .join('');
+}
+
+function highlightSnippets(root) {
+  root.querySelectorAll('code').forEach((block) => {
+    if (block.dataset.highlighted === 'true') {
+      return;
+    }
+
+    const source = block.textContent ?? '';
+    block.innerHTML = highlightTypeScript(source);
+    block.dataset.highlighted = 'true';
+  });
+}
+
 const patterns = [
   {
     id: 'abstract-factory',
@@ -2199,6 +2282,7 @@ function renderExamples(pattern) {
 
     const pre = document.createElement('pre');
     const code = document.createElement('code');
+    code.className = 'language-typescript';
     code.textContent = example.code;
     pre.appendChild(code);
 
@@ -2213,6 +2297,8 @@ function renderExamples(pattern) {
   tabs.appendChild(panels);
   examplesEl.appendChild(tabs);
 
+  highlightSnippets(panels);
+
   function activateTab(index) {
     const buttons = tabList.querySelectorAll('.tab-button');
     const allPanels = panels.querySelectorAll('.tab-panel');
@@ -2225,6 +2311,9 @@ function renderExamples(pattern) {
 
     allPanels.forEach((panel, panelIndex) => {
       panel.classList.toggle('tab-panel--active', panelIndex === index);
+      if (panelIndex === index) {
+        highlightSnippets(panel);
+      }
     });
   }
 }
