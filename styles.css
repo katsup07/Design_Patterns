@@ -166,12 +166,67 @@ body {
 
 .pattern-overview {
   display: grid;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .pattern-meta {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: start;
+}
+
+.pattern-meta__section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pattern-meta__section h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.pattern-meta__list {
+  margin: 0;
+  padding-left: 1.4rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pattern-diagram {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+  justify-self: stretch;
+}
+
+.pattern-diagram h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.pattern-diagram pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.95rem;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--muted);
+}
+
+@media (min-width: 1200px) {
+  .pattern-diagram pre {
+    font-size: 1rem;
+  }
 }
 
 .pattern-diagram {

@@ -88,15 +88,32 @@ const patterns = [
     category: 'Creational',
     description:
       'Provide an interface for creating families of related objects without specifying their concrete classes. Useful when products should work well together and you need to swap entire families easily.',
-    diagram: `Client
-  |
-  v
-AbstractFactory --> AbstractProductA
-AbstractFactory --> AbstractProductB
-  ^                   ^
-  | implements        | implemented by
-ConcreteFactoryA   ConcreteProductA1
-ConcreteFactoryB   ConcreteProductB1`,
+    diagram: `┌───────────────┐
+│    Client     │
+└──────┬────────┘
+       │ uses
+       ▼
+┌──────────────────────┐
+│   AbstractFactory    │
+├──────────────────────┤
+│ + createProductA()   │
+│ + createProductB()   │
+└──────┬────────┬──────┘
+       │        │
+       │        │
+┌───────────────┐   ┌───────────────┐
+│ConcreteFactoryA│   │ConcreteFactoryB│
+└──────┬────────┘   └──────┬────────┘
+       │ creates            │ creates
+       ▼                    ▼
+┌──────────────────────┐   ┌──────────────────────┐
+│  AbstractProductA    │   │  AbstractProductB    │
+└──────┬───────────────┘   └──────┬───────────────┘
+       │ implemented by          │ implemented by
+       ▼                         ▼
+┌───────────────┐          ┌───────────────┐
+│ConcreteProductA1│        │ConcreteProductB1│
+└───────────────┘          └───────────────┘`,
     structure: `interface AbstractProductA {}
 interface AbstractProductB {}
 
@@ -238,12 +255,32 @@ deploy(new AwsToolkit());`,
     category: 'Creational',
     description:
       'Construct complex objects step by step, letting the same construction process create different representations.',
-    diagram: `Client --> Director
-Director --> Builder (defines steps)
-  ^
-  | implemented by
-ConcreteBuilder ----> Product
-Builder.build() --> FinishedResult`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ directs
+       ▼
+┌──────────────┐
+│   Director   │
+└──────┬───────┘
+       │ orchestrates
+       ▼
+┌────────────────────┐
+│      Builder       │
+├────────────────────┤
+│ + reset()          │
+│ + buildPart()      │
+│ + getResult()      │
+└──────┬─────────────┘
+       │ implements
+┌────────────────────┐
+│  ConcreteBuilder   │
+└──────┬─────────────┘
+       │ creates
+       ▼
+┌────────────────────┐
+│      Product       │
+└────────────────────┘`,
     structure: `interface Product {}
 
 interface Builder {
@@ -382,11 +419,30 @@ const rogue = new CharacterBuilder()
     category: 'Creational',
     description:
       'Define an interface for creating an object, but let subclasses decide which class to instantiate.',
-    diagram: `Client --> Creator
-Creator -- factoryMethod() --> Product
-  ^                           ^
-  | subclassed by            | realized by
-ConcreteCreator ------> ConcreteProduct`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ calls someOperation()
+       ▼
+┌────────────────────┐
+│      Creator       │
+├────────────────────┤
+│ + factoryMethod()  │
+│ + someOperation()  │
+└──────┬─────────────┘
+       │ overridden by
+┌────────────────────┐
+│  ConcreteCreator   │
+└──────┬─────────────┘
+       │ creates
+       ▼
+┌────────────────────┐
+│  ConcreteProduct   │
+└──────▲─────────────┘
+       │ implements
+┌────────────────────┐
+│      Product       │
+└────────────────────┘`,
     structure: `interface Product {
   operation(): void;
 }
@@ -503,11 +559,25 @@ new SmsNotifierCreator().notifyUser('2FA code sent');`,
     category: 'Creational',
     description:
       'Clone existing objects without making code dependent on their concrete classes. Good for heavy initialization or when creating objects is expensive.',
-    diagram: `Client --> Prototype.clone()
-Prototype (interface)
-  ^
-  | implemented by
-ConcretePrototype -- clones --> CopiedObject`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ calls clone()
+       ▼
+┌────────────────────┐
+│    Prototype       │
+├────────────────────┤
+│ + clone(): Prototype│
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcretePrototype  │
+└──────┬─────────────┘
+       │ produces copy
+       ▼
+┌────────────────────┐
+│   CopiedObject     │
+└────────────────────┘`,
     structure: `interface Prototype<T> {
   clone(): T;
 }
@@ -594,9 +664,22 @@ eliteOrc.stats.attack += 10;`,
     category: 'Creational',
     description:
       'Ensure a class has only one instance and provide a global access point to it.',
-    diagram: `Client --> Singleton.getInstance()
-Singleton -- stores --> single instance
-getInstance() --> shared object reference`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ requests instance
+       ▼
+┌────────────────────┐
+│     Singleton      │
+├────────────────────┤
+│ - instance         │
+│ + getInstance()    │
+└──────┬─────────────┘
+       │ returns reference to
+       ▼
+┌────────────────────┐
+│  SharedInstance    │
+└────────────────────┘`,
     structure: `class Singleton {
   private static instance: Singleton | null = null;
 
@@ -670,10 +753,28 @@ const db = Database.connect();`,
     category: 'Structural',
     description:
       'Convert the interface of a class into another interface clients expect. Lets incompatible classes work together.',
-    diagram: `Client --> Target interface
-Adapter implements Target
-Adapter --> Adaptee
-Adaptee provides legacy behavior`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ expects Target
+       ▼
+┌────────────────────┐
+│      Target        │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│      Adapter       │
+├────────────────────┤
+│ + request()        │
+└──────┬─────────────┘
+       │ delegates to
+       ▼
+┌────────────────────┐
+│      Adaptee       │
+├────────────────────┤
+│ + specificRequest()│
+│ (legacy behavior)  │
+└────────────────────┘`,
     structure: `interface Target {
   request(): void;
 }
@@ -763,11 +864,31 @@ logger.info('Migrated to adapter');`,
     category: 'Structural',
     description:
       'Decouple an abstraction from its implementation so the two can vary independently.',
-    diagram: `Client --> Abstraction
-Abstraction --> Implementor (bridge)
-  ^                   ^
-  | refined by        | implemented by
-RefinedAbstraction  ConcreteImplementor`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ works with
+       ▼
+┌────────────────────┐
+│    Abstraction     │
+├────────────────────┤
+│ + operation()      │
+└──────┬─────────────┘
+       │ refined by
+┌────────────────────┐
+│ RefinedAbstraction │
+└──────┬─────────────┘
+       │ delegates to
+       ▼
+┌────────────────────┐
+│    Implementor     │
+├────────────────────┤
+│ + operationImpl()  │
+└──────┬─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcreteImplementor│
+└────────────────────┘`,
     structure: `interface Implementor {
   operationImpl(): void;
 }
@@ -879,10 +1000,26 @@ new SalesReport(new JsonExporter()).print();`,
     category: 'Structural',
     description:
       'Compose objects into tree structures to represent part-whole hierarchies and work with all nodes uniformly.',
-    diagram: `Client --> Component interface
-Component <-- Leaf element
-Component <-- Composite node
-Composite --> children: Component[]`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ works with
+       ▼
+┌────────────────────┐
+│     Component      │
+├────────────────────┤
+│ + operation()      │
+└──────┬─────────────┘
+       │             │
+       │             │
+       ▼             ▼
+┌────────────────────┐   ┌────────────────────────┐
+│       Leaf         │   │       Composite        │
+├────────────────────┤   ├────────────────────────┤
+│ + operation()      │   │ + add(Component)       │
+│ (no children)      │   │ + operation()          │
+└────────────────────┘   │ - children: Component[]│
+                         └────────────────────────┘`,
     structure: `interface Component {
   operation(): void;
 }
@@ -985,10 +1122,31 @@ panel.draw();`,
     category: 'Structural',
     description:
       'Attach additional responsibilities to an object dynamically. Provides a flexible alternative to subclassing for extending functionality.',
-    diagram: `Client --> Component interface
-ConcreteComponent implements Component
-Decorator implements Component + holds Component
-ConcreteDecorator --> wraps another Component`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ works with
+       ▼
+┌────────────────────┐
+│     Component      │
+├────────────────────┤
+│ + operation()      │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcreteComponent  │
+└──────▲─────────────┘
+       │ wrapped by
+┌────────────────────┐
+│     Decorator      │
+├────────────────────┤
+│ + operation()      │
+│ - component: Component│
+└──────▲─────────────┘
+       │ extended by
+┌────────────────────┐
+│ ConcreteDecorator  │
+└────────────────────┘`,
     structure: `interface Component {
   operation(): void;
 }
@@ -1082,10 +1240,23 @@ const client = new LoggingClient(new FetchClient());`,
     category: 'Structural',
     description:
       'Provide a unified interface to a set of interfaces in a subsystem, making it easier to use.',
-    diagram: `Client --> Facade
-Facade --> SubsystemA
-Facade --> SubsystemB
-Facade orchestrates multiple subsystems`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ calls
+       ▼
+┌────────────────────┐
+│      Facade        │
+├────────────────────┤
+│ + simpleOperation()│
+└──────┬─────────────┘
+       │ orchestrates
+       ▼
+┌────────────────────┐   ┌────────────────────┐
+│    SubsystemA      │   │    SubsystemB      │
+├────────────────────┤   ├────────────────────┤
+│ + operationA()     │   │ + operationB()     │
+└────────────────────┘   └────────────────────┘`,
     structure: `class SubsystemA {
   operationA(): void {}
 }
@@ -1184,10 +1355,29 @@ analytics.identify('123');`,
     category: 'Structural',
     description:
       'Share common state between multiple objects to support large numbers efficiently.',
-    diagram: `Client --> FlyweightFactory
-FlyweightFactory --> shared Flyweight
-Flyweight.operation(extrinsic)
-Client supplies extrinsic state per call`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ requests shared object
+       ▼
+┌────────────────────┐
+│  FlyweightFactory  │
+├────────────────────┤
+│ + getFlyweight(key)│
+└──────┬─────────────┘
+       │ returns cached
+       ▼
+┌────────────────────┐
+│     Flyweight      │
+├────────────────────┤
+│ - intrinsic state  │
+│ + operation(extrinsic)│
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcreteFlyweight  │
+└────────────────────┘
+Client supplies extrinsic state to each operation() call`,
     structure: `interface Flyweight {
   operation(extrinsic: string): void;
 }
@@ -1284,10 +1474,30 @@ console.log(sharedA === secondA);`,
     category: 'Structural',
     description:
       'Provide a surrogate or placeholder for another object to control access to it.',
-    diagram: `Client --> Subject interface
-Proxy implements Subject --> RealSubject
-Proxy guards access and forwards calls
-RealSubject performs the real work`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ works with
+       ▼
+┌────────────────────┐
+│      Subject       │
+├────────────────────┤
+│ + request()        │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│       Proxy        │
+├────────────────────┤
+│ + request()        │
+│ - realSubject      │
+└──────┬─────────────┘
+       │ controls access to
+       ▼
+┌────────────────────┐
+│    RealSubject     │
+├────────────────────┤
+│ + request()        │
+└────────────────────┘`,
     structure: `interface Subject {
   request(): void;
 }
@@ -1386,10 +1596,31 @@ console.log(secureDoc.read());`,
     category: 'Behavioral',
     description:
       'Pass requests along a chain of handlers until one of them handles it.',
-    diagram: `Client --> Handler1
-Handler1 --> Handler2 --> Handler3
-Each handler can process or delegate
-Chain stops when a handler handles the request`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ sends request to
+       ▼
+┌────────────────────┐
+│     Handler1       │
+├────────────────────┤
+│ + handle(request)  │
+└──────┬─────────────┘
+       │ forwards if unhandled
+       ▼
+┌────────────────────┐
+│     Handler2       │
+├────────────────────┤
+│ + handle(request)  │
+└──────┬─────────────┘
+       │ forwards if unhandled
+       ▼
+┌────────────────────┐
+│     Handler3       │
+├────────────────────┤
+│ + handle(request)  │
+└────────────────────┘
+Each handler may process or delegate to the next`,
     structure: `abstract class Handler {
   private next?: Handler;
 
@@ -1516,10 +1747,37 @@ pipeline.handle({ user: 'sarah' });`,
     category: 'Behavioral',
     description:
       'Encapsulate a request as an object, letting you parameterize clients, queue, and log requests.',
-    diagram: `Client --> Invoker
-Invoker --> Command.execute()
-Command --> Receiver
-ConcreteCommand binds Receiver action`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ configures
+       ▼
+┌────────────────────┐
+│      Invoker       │
+├────────────────────┤
+│ + trigger()        │
+└──────┬─────────────┘
+       │ holds
+       ▼
+┌────────────────────┐
+│      Command       │
+├────────────────────┤
+│ + execute()        │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│  ConcreteCommand   │
+├────────────────────┤
+│ + execute()        │
+│ - receiver         │
+└──────┬─────────────┘
+       │ calls action on
+       ▼
+┌────────────────────┐
+│     Receiver       │
+├────────────────────┤
+│ + action()         │
+└────────────────────┘`,
     structure: `interface Command {
   execute(): void;
 }
@@ -1632,11 +1890,25 @@ runner.process();`,
     category: 'Behavioral',
     description:
       'Define a representation for a simple language and interpret its sentences.',
-    diagram: `Client --> Expression.interpret(context)
-Expression (abstract)
-  |-- TerminalExpression
-  |-- NonterminalExpression (combines expressions)
-Context supplies variables and state`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ evaluates through
+       ▼
+┌────────────────────┐
+│    Expression      │
+├────────────────────┤
+│ + interpret(ctx)   │
+└──────┬─────────────┘
+       │ derives
+       ▼
+┌────────────────────┐   ┌────────────────────────┐
+│TerminalExpression  │   │ NonterminalExpression   │
+├────────────────────┤   ├────────────────────────┤
+│ literal values     │   │ combines subexpressions │
+│ + interpret(ctx)   │   │ + interpret(ctx)        │
+└────────────────────┘   └────────────────────────┘
+Context objects supply variables and state`,
     structure: `interface Expression {
   interpret(context: Map<string, number>): number;
 }
@@ -1728,10 +2000,33 @@ expr.interpret({ isAdmin: true, isActive: false });`,
     category: 'Behavioral',
     description:
       'Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation.',
-    diagram: `Client --> Aggregate
-Aggregate --> createIterator()
-Iterator --> next() / hasNext()
-ConcreteIterator traverses ConcreteAggregate`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ requests iterator from
+       ▼
+┌────────────────────┐
+│     Aggregate      │
+├────────────────────┤
+│ + createIterator() │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcreteAggregate  │
+└──────┬─────────────┘
+       │ produces
+       ▼
+┌────────────────────┐
+│     Iterator       │
+├────────────────────┤
+│ + hasNext()        │
+│ + next()           │
+└──────▲─────────────┘
+       │ implemented by
+┌────────────────────┐
+│ ConcreteIterator   │
+└────────────────────┘
+Client traverses elements through the iterator`,
     structure: `interface Iterator<T> {
   next(): T | undefined;
   hasNext(): boolean;
@@ -1830,10 +2125,22 @@ for (const track of new Playlist(['Intro', 'Verse'])) {
     category: 'Behavioral',
     description:
       'Define an object that encapsulates how a set of objects interact, promoting loose coupling.',
-    diagram: `ColleagueA --> Mediator <-- ColleagueB
-Mediator routes messages between colleagues
-Colleagues only talk to the Mediator
-Mediator can trigger operations back on colleagues`,
+    diagram: `┌────────────────────┐          ┌────────────────────┐
+│    ColleagueA      │          │    ColleagueB      │
+└──────┬─────────────┘          └──────────┬────────┘
+       │ sends via mediator               │ sends via mediator
+       ▼                                  ▼
+              ┌────────────────────┐
+              │     Mediator       │
+              ├────────────────────┤
+              │ routes interactions│
+              └──────┬─────────────┘
+                     │ notifies colleagues
+          ┌──────────▼────────┐          ┌────────────▼─────────┐
+          │    ColleagueA     │          │     ColleagueB       │
+          │   receive(event)  │          │    receive(event)    │
+          └───────────────────┘          └──────────────────────┘
+Colleagues only communicate through the mediator`,
     structure: `interface Mediator {
   notify(sender: Colleague, event: string): void;
 }
@@ -1967,10 +2274,32 @@ username.focus();`,
     category: 'Behavioral',
     description:
       'Capture and externalize an object’s internal state so it can be restored later without violating encapsulation.',
-    diagram: `Originator --> createMemento() -> Memento
-Caretaker stores Memento snapshots
-Caretaker --> restore() --> Originator
-Memento carries the saved state data`,
+    diagram: `┌────────────────────┐
+│    Originator      │
+├────────────────────┤
+│ - state            │
+│ + createMemento()  │
+│ + restore(memento) │
+└──────┬─────────────┘
+       │ captures state in
+       ▼
+┌────────────────────┐
+│      Memento       │
+├────────────────────┤
+│ + saved snapshot   │
+└──────▲─────────────┘
+       │ stored by
+┌────────────────────┐
+│     Caretaker      │
+├────────────────────┤
+│ + backup()         │
+│ + undo()           │
+└──────┬─────────────┘
+       │ restores snapshot to
+       ▼
+┌────────────────────┐
+│    Originator      │
+└────────────────────┘`,
     structure: `class Memento {
   constructor(public readonly state: string) {}
 }
@@ -2093,10 +2422,25 @@ game.restore();`,
     category: 'Behavioral',
     description:
       'Define a one-to-many dependency between objects so when one object changes state, all its dependents are notified.',
-    diagram: `Subject <-- register() -- Observer
-Subject.stateChanged() --> notifyObservers()
-Observers implement update()
-Multiple observers react to the same subject`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ registers observers with
+       ▼
+┌────────────────────┐
+│      Subject       │
+├────────────────────┤
+│ + register(observer)│
+│ + notify(state)     │
+└──────┬─────────────┘
+       │ broadcasts state to
+       ▼
+┌────────────────────┐     ┌────────────────────┐
+│    Observer A      │     │    Observer B      │
+├────────────────────┤     ├────────────────────┤
+│ + update(state)    │     │ + update(state)    │
+└────────────────────┘     └────────────────────┘
+All observers react when the subject changes`,
     structure: `interface Observer {
   update(state: string): void;
 }
@@ -2192,10 +2536,27 @@ station.setTemperature(22);`,
     category: 'Behavioral',
     description:
       'Allow an object to alter its behavior when its internal state changes.',
-    diagram: `Context --> current State
-State.handle(context)
-State interface <-- ConcreteStateA/B
-ConcreteState can swap Context.state`,
+    diagram: `┌────────────────────┐
+│      Context       │
+├────────────────────┤
+│ - state: State     │
+│ + request()        │
+└──────┬─────────────┘
+       │ delegates to current
+       ▼
+┌────────────────────┐
+│       State        │
+├────────────────────┤
+│ + handle(context)  │
+└──────┬─────────────┘
+       │ implemented by
+┌────────────────────┐   ┌────────────────────┐
+│  ConcreteStateA    │   │  ConcreteStateB    │
+├────────────────────┤   ├────────────────────┤
+│ + handle(context)  │   │ + handle(context)  │
+│ (may change state) │   │ (may change state) │
+└────────────────────┘   └────────────────────┘
+State objects can replace context.state with new instances`,
     structure: `interface State {
   handle(context: Context): void;
 }
@@ -2310,10 +2671,30 @@ player.play();`,
     category: 'Behavioral',
     description:
       'Define a family of algorithms, encapsulate each one, and make them interchangeable.',
-    diagram: `Client selects Strategy
-Context --> Strategy interface
-Strategy interface <-- ConcreteStrategyA/B
-Context delegates algorithm to Strategy`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ selects algorithm for
+       ▼
+┌────────────────────┐
+│      Context       │
+├────────────────────┤
+│ - strategy: Strategy│
+│ + run(data)        │
+└──────┬─────────────┘
+       │ delegates to
+       ▼
+┌────────────────────┐
+│     Strategy       │
+├────────────────────┤
+│ + execute(data)    │
+└──────┬─────────────┘
+       │ implemented by
+┌────────────────────┐   ┌────────────────────┐
+│ConcreteStrategyA   │   │ConcreteStrategyB   │
+├────────────────────┤   ├────────────────────┤
+│ algorithm variant  │   │ algorithm variant  │
+└────────────────────┘   └────────────────────┘`,
     structure: `interface Strategy {
   execute(data: string[]): string[];
 }
@@ -2412,10 +2793,27 @@ sorter.sort([3, 1, 2]);`,
     category: 'Behavioral',
     description:
       'Define the skeleton of an algorithm in an operation, deferring some steps to subclasses.',
-    diagram: `AbstractClass --> templateMethod()
-templateMethod() calls primitive steps
-ConcreteClass overrides primitiveOperation()
-Shared steps live in AbstractClass`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ calls
+       ▼
+┌────────────────────┐
+│   AbstractClass    │
+├────────────────────┤
+│ + templateMethod() │
+│ + commonStep()     │
+│ # primitiveStep()  │
+└──────┬─────────────┘
+       │ defines algorithm skeleton
+       ▼
+┌────────────────────┐
+│  ConcreteClass     │
+├────────────────────┤
+│ + primitiveStep()  │
+│ (custom behavior)  │
+└────────────────────┘
+templateMethod() invokes shared steps and subclass overrides`,
     structure: `abstract class AbstractClass {
   templateMethod() {
     this.stepOne();
@@ -2511,10 +2909,32 @@ new WebPipeline().run();`,
     category: 'Behavioral',
     description:
       'Represent an operation to be performed on elements of an object structure without changing the classes of the elements.',
-    diagram: `Client --> Element.accept(visitor)
-Element interface <-- ConcreteElementA/B
-Visitor interface <-- ConcreteVisitor
-accept() calls visitor.visitConcreteElement(this)`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ traverses structure of
+       ▼
+┌────────────────────┐
+│      Element       │
+├────────────────────┤
+│ + accept(visitor)  │
+└──────┬─────────────┘
+       │ implemented by
+┌────────────────────┐   ┌────────────────────┐
+│ConcreteElementA    │   │ConcreteElementB    │
+└──────┬─────────────┘   └──────┬─────────────┘
+       │ call visitor.visitA()   │ call visitor.visitB()
+       ▼                         ▼
+┌────────────────────┐
+│      Visitor       │
+├────────────────────┤
+│ + visitElementA()  │
+│ + visitElementB()  │
+└──────┬─────────────┘
+       │ implemented by
+┌────────────────────┐
+│  ConcreteVisitor   │
+└────────────────────┘`,
     structure: `interface Visitor {
   visitElementA(element: ConcreteElementA): void;
   visitElementB(element: ConcreteElementB): void;
@@ -2640,10 +3060,24 @@ ast.accept(new PrintVisitor());`,
     category: 'Modern',
     description:
       'A unidirectional data flow architecture often used with React applications.',
-    diagram: `View --> Action --> Dispatcher
-Dispatcher --> Store (register listeners)
-Store updates state --> View re-renders
-Cycle repeats with unidirectional flow`,
+    diagram: `┌────────────────────┐    dispatch(action)    ┌────────────────────┐
+│       View         │──────────────────────────────►│     Dispatcher     │
+├────────────────────┤                              ├────────────────────┤
+│ user interactions  │                              │ routes actions      │
+└──────┬─────────────┘                              └──────┬─────────────┘
+       │ creates Action                                      │ notifies registered
+       ▼                                                      ▼ stores
+┌────────────────────┐                             ┌────────────────────┐
+│      Action        │                             │       Store        │
+└────────────────────┘                             ├────────────────────┤
+                                                   │ updates state       │
+                                                   └──────┬─────────────┘
+                                                          │ emits change to
+                                                          ▼
+                                             ┌────────────────────┐
+                                             │   View (re-render) │
+                                             └────────────────────┘
+Unidirectional loop repeats for each dispatched action`,
     structure: `type Action = { type: string; payload?: unknown };
 
 type State = { value: number };
@@ -2782,10 +3216,25 @@ dispatcher.dispatch({ type: 'add', text: 'Learn Flux' });`,
     category: 'Modern',
     description:
       'A simple publish/subscribe mechanism for decoupled communication across an application.',
-    diagram: `Publisher --> EventBus.emit(event)
-EventBus notifies SubscriberA, SubscriberB
-Subscribers handle(payload)
-Subscribers can subscribe/unsubscribe dynamically`,
+    diagram: `┌──────────────┐
+│  Publisher   │
+└──────┬───────┘
+       │ emits(event, payload)
+       ▼
+┌────────────────────┐
+│      EventBus      │
+├────────────────────┤
+│ + subscribe(event) │
+│ + emit(event,payload)│
+└──────┬─────────────┘
+       │ notifies subscribers
+       ▼
+┌────────────────────┐     ┌────────────────────┐
+│   Subscriber A     │     │   Subscriber B     │
+├────────────────────┤     ├────────────────────┤
+│ + handle(payload)  │     │ + handle(payload)  │
+└────────────────────┘     └────────────────────┘
+Listeners can subscribe or unsubscribe at runtime`,
     structure: `type EventHandler = (payload: unknown) => void;
 
 class EventBus {
@@ -2889,10 +3338,30 @@ off();`,
     category: 'Modern',
     description:
       'Store expensive computation or fetch results so subsequent calls return quickly.',
-    diagram: `Client --> Cache.lookup(key)
-Cache hit? --> return cached value
-Cache miss --> DataSource.fetch()
-Store new value back in Cache`,
+    diagram: `┌──────────────┐
+│    Client    │
+└──────┬───────┘
+       │ lookup(key)
+       ▼
+┌────────────────────┐
+│       Cache        │
+├────────────────────┤
+│ - store: Map       │
+│ + lookup(key)      │
+└──────┬─────────────┘
+       │ miss triggers fetch from
+       ▼
+┌────────────────────┐
+│    DataSource      │
+├────────────────────┤
+│ + fetch(key)       │
+└──────┬─────────────┘
+       │ returns value to cache
+       ▼
+┌────────────────────┐
+│  Cached Response   │
+└────────────────────┘
+Cache stores the value and serves future lookups`,
     structure: `interface DataSource {
   fetch(key: string): Promise<string>;
 }
@@ -3030,9 +3499,9 @@ function setActivePattern(id) {
     <p>${pattern.description}</p>
     <div class="pattern-overview">
       <div class="pattern-meta">
-        <div>
+        <div class="pattern-meta__section">
           <h4>When to use it</h4>
-          <ul>
+          <ul class="pattern-meta__list">
             ${pattern.whenToUse.map((item) => `<li>${item}</li>`).join('')}
           </ul>
         </div>
