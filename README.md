@@ -2,6 +2,8 @@
 
 A comprehensive, TypeScript-focused guide to classic and modern design patterns with clear explanations and simple examples.
 
+<img width="2549" height="1130" alt="Design-Patterns-Guide-10-05-2025_11_05_PM" src="https://github.com/user-attachments/assets/1e82363e-3a8a-46b0-9354-b15952686765" />
+
 ## Overview
 
 This interactive web application provides detailed explanations of 26+ software design patterns, organized into Creational, Structural, Behavioral, and Modern categories. Each pattern includes:
