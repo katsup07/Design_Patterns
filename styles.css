@@ -6,6 +6,7 @@
   --muted: #9ea1b3;
   --accent: #ff4d94;
   --accent-soft: rgba(255, 77, 148, 0.18);
+  --structure-blue: #4da3ff;
   --border: #27293d;
   --code-bg: #1b1b2b;
   --code-border: #2d2d44;
@@ -163,9 +164,45 @@ body {
   line-height: 1.6;
 }
 
+.pattern-overview {
+  display: grid;
+  gap: 1.5rem;
+}
+
 .pattern-meta {
   display: grid;
   gap: 1rem;
+}
+
+.pattern-diagram {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pattern-diagram h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.pattern-diagram pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.95rem;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .pattern-overview {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
 }
 
 .pattern-meta__usage {
@@ -218,6 +255,24 @@ body {
   border-color: var(--accent);
 }
 
+.tab-button--structure {
+  color: var(--structure-blue);
+  border-color: rgba(77, 163, 255, 0.4);
+  background: rgba(77, 163, 255, 0.08);
+}
+
+.tab-button--structure:hover {
+  color: var(--structure-blue);
+  border-color: var(--structure-blue);
+  background: rgba(77, 163, 255, 0.16);
+}
+
+.tab-button--structure.tab-button--active {
+  background: rgba(77, 163, 255, 0.24);
+  border-color: var(--structure-blue);
+  color: var(--structure-blue);
+}
+
 .tab-panel {
   display: none;
 }
@@ -245,6 +300,14 @@ body {
   margin: 0;
   font-size: 1rem;
   color: var(--text);
+}
+
+.code-card__title--structure {
+  color: var(--structure-blue);
+}
+
+.structure-heading {
+  color: var(--structure-blue);
 }
 
 .copy-button {
