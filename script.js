@@ -1,7 +1,3 @@
-if (window.hljs) {
-  window.hljs.configure({ languages: ['typescript'] });
-}
-
 const patterns = [
   {
     id: 'abstract-factory',
@@ -2203,7 +2199,6 @@ function renderExamples(pattern) {
 
     const pre = document.createElement('pre');
     const code = document.createElement('code');
-    code.className = 'language-typescript';
     code.textContent = example.code;
     pre.appendChild(code);
 
@@ -2217,14 +2212,6 @@ function renderExamples(pattern) {
   tabs.appendChild(tabList);
   tabs.appendChild(panels);
   examplesEl.appendChild(tabs);
-
-  if (window.hljs) {
-    requestAnimationFrame(() => {
-      panels.querySelectorAll('code').forEach((block) => {
-        window.hljs.highlightElement(block);
-      });
-    });
-  }
 
   function activateTab(index) {
     const buttons = tabList.querySelectorAll('.tab-button');
