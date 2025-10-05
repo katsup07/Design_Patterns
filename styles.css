@@ -6,6 +6,7 @@
   --muted: #9ea1b3;
   --accent: #ff4d94;
   --accent-soft: rgba(255, 77, 148, 0.18);
+  --structure-blue: #4da3ff;
   --border: #27293d;
   --code-bg: #1b1b2b;
   --code-border: #2d2d44;
@@ -66,6 +67,37 @@ body {
 .sidebar__tagline {
   color: var(--muted);
   margin: 0.35rem 0 2rem;
+}
+
+.language-toggle {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.language-toggle__button {
+  flex: 1 1 0;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: border 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.language-toggle__button:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 77, 148, 0.1);
+}
+
+.language-toggle__button--active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .sidebar__nav {
@@ -163,9 +195,70 @@ body {
   line-height: 1.6;
 }
 
+.pattern-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .pattern-meta {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: start;
+}
+
+.pattern-meta__section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pattern-meta__section h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.pattern-meta__list {
+  margin: 0;
+  padding-left: 1.4rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pattern-diagram {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+  justify-self: stretch;
+}
+
+.pattern-diagram h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.pattern-diagram pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.95rem;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--muted);
+}
+
+@media (min-width: 1200px) {
+  .pattern-diagram pre {
+    font-size: 1rem;
+  }
 }
 
 .pattern-meta__usage {
@@ -218,6 +311,24 @@ body {
   border-color: var(--accent);
 }
 
+.tab-button--structure {
+  color: var(--structure-blue);
+  border-color: rgba(77, 163, 255, 0.4);
+  background: rgba(77, 163, 255, 0.08);
+}
+
+.tab-button--structure:hover {
+  color: var(--structure-blue);
+  border-color: var(--structure-blue);
+  background: rgba(77, 163, 255, 0.16);
+}
+
+.tab-button--structure.tab-button--active {
+  background: rgba(77, 163, 255, 0.24);
+  border-color: var(--structure-blue);
+  color: var(--structure-blue);
+}
+
 .tab-panel {
   display: none;
 }
@@ -245,6 +356,14 @@ body {
   margin: 0;
   font-size: 1rem;
   color: var(--text);
+}
+
+.code-card__title--structure {
+  color: var(--structure-blue);
+}
+
+.structure-heading {
+  color: var(--structure-blue);
 }
 
 .copy-button {
