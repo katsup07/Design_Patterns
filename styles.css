@@ -1,16 +1,31 @@
 :root {
   color-scheme: dark;
-  --bg: #101018;
-  --bg-elevated: #181828;
-  --text: #f4f4f8;
-  --muted: #9ea1b3;
+  --bg: #0a0e27;
+  --bg-elevated: #131829;
+  --bg-secondary: #1a1f3a;
+  --text: #f5f7fa;
+  --text-secondary: #c5cae0;
+  --muted: #8b91ad;
   --accent: #ff4d94;
-  --accent-soft: rgba(255, 77, 148, 0.18);
+  --accent-alt: #ff1493;
+  --accent-soft: rgba(255, 77, 148, 0.12);
+  --accent-soft-hover: rgba(255, 77, 148, 0.2);
   --structure-blue: #4da3ff;
-  --border: #27293d;
-  --code-bg: #1b1b2b;
-  --code-border: #2d2d44;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --structure-blue-soft: rgba(77, 163, 255, 0.1);
+  --success: #00d084;
+  --warning: #ffb347;
+  --border: #232a47;
+  --border-light: #2d3556;
+  --code-bg: #0f1223;
+  --code-border: #1f2844;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --shadow-accent: 0 12px 40px rgba(255, 77, 148, 0.25);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-feature-settings: "rvrn" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -19,7 +34,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: linear-gradient(135deg, var(--bg) 0%, #0f1430 50%, var(--bg) 100%));
   color: var(--text);
   min-height: 100vh;
   display: flex;
@@ -32,13 +47,15 @@ body {
 
 .sidebar {
   width: 320px;
-  background: linear-gradient(180deg, #151523 0%, #101018 100%);
+  background: linear-gradient(180deg, rgba(19, 24, 41, 0.8) 0%, rgba(10, 14, 39, 0.95) 100%);
+  backdrop-filter: blur(10px);
   border-right: 1px solid var(--border);
   padding: 2.5rem 1.5rem;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  box-shadow: inset -1px 0 0 rgba(255, 77, 148, 0.05);
 }
 
 .sidebar__header {
@@ -53,20 +70,35 @@ body {
   width: 72px;
   height: 72px;
   border-radius: 1.2rem;
-  box-shadow: 0 15px 30px rgba(255, 77, 148, 0.35);
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 60%),
-    rgba(255, 77, 148, 0.18);
+  box-shadow: var(--shadow-accent), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 77, 148, 0.15) 0%, rgba(255, 20, 147, 0.08) 100%);
   padding: 0.75rem;
+  border: 1px solid rgba(255, 77, 148, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar__logo:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-accent), inset 0 1px 2px rgba(255, 255, 255, 0.15);
 }
 
 .sidebar__header h1 {
   font-size: 1.6rem;
+  font-weight: 700;
   margin: 0;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff6bb8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
 }
 
 .sidebar__tagline {
   color: var(--muted);
   margin: 0.35rem 0 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 .sidebar__nav {
@@ -76,38 +108,45 @@ body {
 
 .nav-group {
   border-radius: 0.8rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
   overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .nav-group__title {
   margin: 0;
   padding: 0.75rem 1rem;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+  font-weight: 600;
 }
 
 .nav-item {
   display: block;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 1rem;
   text-decoration: none;
-  color: var(--text);
-  font-size: 0.98rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
   border-left: 3px solid transparent;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.25s ease;
+  font-weight: 500;
+  position: relative;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 77, 148, 0.08);
+  border-left-color: rgba(255, 77, 148, 0.4);
+  color: var(--text);
+  transform: translateX(2px);
 }
 
 .nav-item--active {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-left-color: var(--accent);
+  background: linear-gradient(90deg, var(--accent-soft) 0%, transparent 100%);
   color: var(--accent);
   font-weight: 600;
 }
@@ -136,21 +175,38 @@ body {
 }
 
 .content__title {
-  font-size: 2.2rem;
+  font-size: 2.4rem;
+  font-weight: 700;
   margin: 0;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .card {
-  background: var(--bg-elevated);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
   border-radius: 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   padding: 1.75rem;
-  box-shadow: 0 30px 60px rgba(12, 12, 20, 0.45);
+  box-shadow: var(--shadow-lg), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--border);
+  box-shadow: 0 20px 50px rgba(255, 77, 148, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
 }
 
 .card h3 {
   margin-top: 0;
   font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .card p {
@@ -260,24 +316,28 @@ body {
 
 .tab-button {
   border: 1px solid var(--border);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.1rem;
   border-radius: 999px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: border 0.2s ease, color 0.2s ease, background 0.2s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .tab-button:hover {
   color: var(--text);
   border-color: var(--accent);
+  background: rgba(255, 77, 148, 0.08);
+  transform: translateY(-1px);
 }
 
 .tab-button--active {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #ff6bb8 100%));
+  color: #fff;
   border-color: var(--accent);
+  box-shadow: 0 4px 15px rgba(255, 77, 148, 0.3);
 }
 
 .tab-button--structure {
@@ -307,11 +367,18 @@ body {
 }
 
 .code-card {
-  background: var(--code-bg);
+  background: linear-gradient(135deg, rgba(15, 18, 35, 0.8) 0%, rgba(19, 24, 41, 0.4) 100%);
   border-radius: 0.8rem;
   border: 1px solid var(--code-border);
   padding: 1.2rem 1.2rem 1.4rem;
   position: relative;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.code-card:hover {
+  border-color: rgba(77, 163, 255, 0.3);
+  background: linear-gradient(135deg, rgba(15, 18, 35, 0.9) 0%, rgba(19, 24, 41, 0.5) 100%);
 }
 
 .code-card__header {
@@ -336,19 +403,23 @@ body {
 }
 
 .copy-button {
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(255, 77, 148, 0.2);
+  background: rgba(255, 77, 148, 0.08);
+  color: var(--accent);
+  padding: 0.45rem 0.85rem;
   border-radius: 0.6rem;
   cursor: pointer;
   font-size: 0.85rem;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .copy-button:hover {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #ff6bb8 100%));
   color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(255, 77, 148, 0.3);
+  transform: translateY(-1px);
 }
 
 pre {
